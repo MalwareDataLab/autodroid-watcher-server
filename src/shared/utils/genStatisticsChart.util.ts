@@ -8,10 +8,6 @@ import { generateChart } from "./chartModule.util";
 
 type CsvKeys =
   | "Count"
-  | "TimeDifferenceSeconds_mean"
-  | "TimeDifferenceSeconds_median"
-  | "TimeDifferenceSeconds_std_dev"
-  | "TimeDifferenceSeconds_mode"
   | "ActiveProcessingCount_mean"
   | "ActiveProcessingCount_median"
   | "ActiveProcessingCount_std_dev"
@@ -69,12 +65,6 @@ const PHASE_COUNT = 3;
 // New interface for statistics data
 interface StatisticsData {
   Count: number[];
-  TimeDifferenceSeconds: {
-    mean: number[];
-    median: number[];
-    std_dev: number[];
-    mode: number[];
-  };
   ActiveProcessingCount: {
     mean: number[];
     median: number[];
@@ -182,7 +172,6 @@ async function validateAndParseStatisticsCsv({
 
   const data: StatisticsData = {
     Count: [],
-    TimeDifferenceSeconds: { mean: [], median: [], std_dev: [], mode: [] },
     ActiveProcessingCount: { mean: [], median: [], std_dev: [], mode: [] },
     Host_CPU: { mean: [], median: [], std_dev: [], mode: [] },
     Host_Memory_Used: { mean: [], median: [], std_dev: [], mode: [] },
@@ -211,13 +200,6 @@ async function validateAndParseStatisticsCsv({
     data.Count.push(record.Count);
 
     // Main metrics
-    data.TimeDifferenceSeconds.mean.push(record.TimeDifferenceSeconds_mean);
-    data.TimeDifferenceSeconds.median.push(record.TimeDifferenceSeconds_median);
-    data.TimeDifferenceSeconds.std_dev.push(
-      record.TimeDifferenceSeconds_std_dev,
-    );
-    data.TimeDifferenceSeconds.mode.push(record.TimeDifferenceSeconds_mode);
-
     data.ActiveProcessingCount.mean.push(record.ActiveProcessingCount_mean);
     data.ActiveProcessingCount.median.push(record.ActiveProcessingCount_median);
     data.ActiveProcessingCount.std_dev.push(
@@ -429,14 +411,14 @@ async function generateAndSaveStatisticsChart(params: {
         },
       },
       {
-        label: "Process Count Mode",
-        data: data.ActiveProcessingCount.mode.map((val, idx) =>
-          idx > 0 &&
-          data.ActiveProcessingCount.mode[idx] !==
-            data.ActiveProcessingCount.mode[idx - 1]
+        label: "Process Count Mean",
+        data: data.ActiveProcessingCount.mean.map((val, idx) => {
+          return idx > 0 &&
+            Math.ceil(data.ActiveProcessingCount.mean[idx]) !==
+              Math.ceil(data.ActiveProcessingCount.mean[idx - 1])
             ? data.Host_CPU.mean[idx]
-            : null,
-        ),
+            : null;
+        }),
         borderColor: "rgb(255, 0, 0)",
         backgroundColor: "rgb(0, 255, 0)",
         showLine: false,
@@ -447,16 +429,18 @@ async function generateAndSaveStatisticsChart(params: {
           align: "center",
           anchor: "center",
           formatter: (value, context) => {
-            return data.ActiveProcessingCount.mode[context.dataIndex];
+            return Math.ceil(
+              data.ActiveProcessingCount.mean[context.dataIndex],
+            );
           },
           backgroundColor: context => {
             const idx = context.dataIndex;
             if (idx === undefined) return "transparent";
             return idx > 0 &&
-              data.ActiveProcessingCount.mode[idx] !==
-                data.ActiveProcessingCount.mode[idx - 1] &&
-              data.ActiveProcessingCount.mode[idx] >
-                data.ActiveProcessingCount.mode[idx - 1]
+              data.ActiveProcessingCount.mean[idx] !==
+                data.ActiveProcessingCount.mean[idx - 1] &&
+              data.ActiveProcessingCount.mean[idx] >
+                data.ActiveProcessingCount.mean[idx - 1]
               ? "rgb(0, 255, 0)"
               : "rgb(255,0,0)";
           },
@@ -545,14 +529,14 @@ async function generateAndSaveStatisticsChart(params: {
         },
       },
       {
-        label: "Process Count Mode",
-        data: data.ActiveProcessingCount.mode.map((val, idx) =>
-          idx > 0 &&
-          data.ActiveProcessingCount.mode[idx] !==
-            data.ActiveProcessingCount.mode[idx - 1]
+        label: "Process Count Mean",
+        data: data.ActiveProcessingCount.mean.map((val, idx) => {
+          return idx > 0 &&
+            Math.ceil(data.ActiveProcessingCount.mean[idx]) !==
+              Math.ceil(data.ActiveProcessingCount.mean[idx - 1])
             ? data.Host_Memory_UsedPercentage.mean[idx]
-            : null,
-        ),
+            : null;
+        }),
         borderColor: "rgb(255, 0, 0)",
         backgroundColor: "rgb(0, 255, 0)",
         showLine: false,
@@ -563,16 +547,18 @@ async function generateAndSaveStatisticsChart(params: {
           align: "center",
           anchor: "center",
           formatter: (value, context) => {
-            return data.ActiveProcessingCount.mode[context.dataIndex];
+            return Math.ceil(
+              data.ActiveProcessingCount.mean[context.dataIndex],
+            );
           },
           backgroundColor: context => {
             const idx = context.dataIndex;
             if (idx === undefined) return "transparent";
             return idx > 0 &&
-              data.ActiveProcessingCount.mode[idx] !==
-                data.ActiveProcessingCount.mode[idx - 1] &&
-              data.ActiveProcessingCount.mode[idx] >
-                data.ActiveProcessingCount.mode[idx - 1]
+              data.ActiveProcessingCount.mean[idx] !==
+                data.ActiveProcessingCount.mean[idx - 1] &&
+              data.ActiveProcessingCount.mean[idx] >
+                data.ActiveProcessingCount.mean[idx - 1]
               ? "rgb(0, 255, 0)"
               : "rgb(255,0,0)";
           },
@@ -683,14 +669,14 @@ async function generateAndSaveStatisticsChart(params: {
         },
       },
       {
-        label: "Process Count Mode",
-        data: data.ActiveProcessingCount.mode.map((val, idx) =>
-          idx > 0 &&
-          data.ActiveProcessingCount.mode[idx] !==
-            data.ActiveProcessingCount.mode[idx - 1]
+        label: "Process Count Mean",
+        data: data.ActiveProcessingCount.mean.map((val, idx) => {
+          return idx > 0 &&
+            Math.ceil(data.ActiveProcessingCount.mean[idx]) !==
+              Math.ceil(data.ActiveProcessingCount.mean[idx - 1])
             ? data.Worker_CPU.mean[idx]
-            : null,
-        ),
+            : null;
+        }),
         borderColor: "rgb(255, 0, 0)",
         backgroundColor: "rgb(0, 255, 0)",
         showLine: false,
@@ -701,16 +687,18 @@ async function generateAndSaveStatisticsChart(params: {
           align: "center",
           anchor: "center",
           formatter: (value, context) => {
-            return data.ActiveProcessingCount.mode[context.dataIndex];
+            return Math.ceil(
+              data.ActiveProcessingCount.mean[context.dataIndex],
+            );
           },
           backgroundColor: context => {
             const idx = context.dataIndex;
             if (idx === undefined) return "transparent";
             return idx > 0 &&
-              data.ActiveProcessingCount.mode[idx] !==
-                data.ActiveProcessingCount.mode[idx - 1] &&
-              data.ActiveProcessingCount.mode[idx] >
-                data.ActiveProcessingCount.mode[idx - 1]
+              data.ActiveProcessingCount.mean[idx] !==
+                data.ActiveProcessingCount.mean[idx - 1] &&
+              data.ActiveProcessingCount.mean[idx] >
+                data.ActiveProcessingCount.mean[idx - 1]
               ? "rgb(0, 255, 0)"
               : "rgb(255,0,0)";
           },
@@ -720,6 +708,20 @@ async function generateAndSaveStatisticsChart(params: {
             lineHeight: 1,
           },
         },
+      },
+    ],
+  });
+
+  await generateChart({
+    outputDir,
+    fileName: "process_count_statistics.png",
+    labels: data.Count,
+    title: "Active Process Count Statistics",
+    datasets: [
+      {
+        label: "Active Process Count Mean",
+        data: data.ActiveProcessingCount.mean,
+        borderColor: "rgb(75, 192, 192)",
       },
     ],
   });
@@ -881,7 +883,7 @@ const generateAndSaveAllStatisticsCharts = async () => {
 
   const globalStatisticsDir = path.join(experimentDir, "globalStatistics");
   if (!fs.existsSync(globalStatisticsDir)) {
-    console.error("Global statistics directory not found.");
+    fs.mkdirSync(globalStatisticsDir);
   }
 
   const globalStatisticsFolders = fs.readdirSync(globalStatisticsDir);

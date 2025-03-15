@@ -26,6 +26,13 @@ const argv = yargs(hideBin(process.argv))
     default: 3000,
     description: "Port for the server (default: 3000)",
   })
+  .option("environment", {
+    type: "string",
+    alias: "e",
+    demandOption: true,
+    choices: ["dev", "prod"],
+    description: "Environment of the server (dev, prod)",
+  })
   .help()
   .parseSync();
 
@@ -46,6 +53,7 @@ const paramsSchema = z.object({
   port: z.number().default(3000),
   email: z.string().email(),
   password: z.string(),
+  environment: z.enum(["dev", "prod"]),
 });
 
 type Params = z.infer<typeof paramsSchema>;
@@ -56,6 +64,7 @@ const params = {
   port: argv.port as number,
   email: argv.email as string,
   password: argv.password as string,
+  environment: argv.environment as "dev" | "prod",
 } as Params;
 
 (async () => {

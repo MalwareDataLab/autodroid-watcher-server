@@ -1,4 +1,7 @@
-import { MetricsReport } from "@shared/types/metrics.type";
+import {
+  MetricsReport,
+  SystemInformationData,
+} from "@shared/types/metrics.type";
 import path from "node:path";
 import fsSync from "node:fs";
 import fsAsync from "node:fs/promises";
@@ -12,7 +15,6 @@ class ServerUtils {
     "ServerTime",
     "WorkerName",
     "WorkerTime",
-    "TimeDifferenceSeconds",
     "ProcedureId",
     "ActiveProcessingCount",
     "Host_CPU",
@@ -40,6 +42,34 @@ class ServerUtils {
     "Processing_Memory_UsedPercentage_3",
   ].join(",");
 
+  private async setupProcedureFolderAndGetFolder({
+    procedureId,
+  }: {
+    procedureId: string;
+  }): Promise<string> {
+    const folderPath = path.join(process.cwd(), "experiments", procedureId);
+
+    if (!fsSync.existsSync(folderPath))
+      fsSync.mkdirSync(folderPath, { recursive: true });
+
+    return folderPath;
+  }
+
+  protected async writeSystemInformation(
+    params: SystemInformationData,
+  ): Promise<void> {
+    const { procedureId } = params;
+
+    const folderPath = await this.setupProcedureFolderAndGetFolder({
+      procedureId,
+    });
+
+    const logFilePath = path.join(folderPath, "systemInformation.json");
+
+    if (!fsSync.existsSync(logFilePath))
+      fsAsync.writeFile(logFilePath, JSON.stringify(params, null, 2));
+  }
+
   protected async write(params: MetricsReport): Promise<void> {
     const {
       workerName,
@@ -62,9 +92,9 @@ class ServerUtils {
       throw new Error(`Worker reported error ${error}`);
     }
 
-    const folderPath = path.join(process.cwd(), "experiments", procedureId);
-
-    fsSync.mkdirSync(folderPath, { recursive: true });
+    const folderPath = await this.setupProcedureFolderAndGetFolder({
+      procedureId,
+    });
 
     const logFilePath = path.join(folderPath, `${params.workerName}.csv`);
 
@@ -73,13 +103,6 @@ class ServerUtils {
 
     const serverTime = new Date();
     const serverTimeString = serverTime.toISOString();
-
-    const workerTime = new Date(time);
-
-    const timeDifference = Math.abs(
-      serverTime.getTime() - workerTime.getTime(),
-    );
-    const timeDifferenceSeconds = Math.floor(timeDifference / 1000);
 
     // Flatten processingMetrics
     const processingKeys = Object.keys(processingMetrics);
@@ -104,7 +127,6 @@ class ServerUtils {
       serverTimeString,
       workerName,
       time,
-      timeDifferenceSeconds,
       procedureId,
       processingKeys.length,
       hostMetrics.cpu.usedPercentage ?? "",

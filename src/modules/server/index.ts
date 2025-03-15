@@ -3,7 +3,8 @@ import { AutoDroidSdk } from "autodroid";
 import { startAndGetSessionToken } from "@shared/utils/startAndGetSessionToken.util";
 import { params } from "@/src";
 import { sleep } from "@shared/utils/sleep.util";
-import readline from "node:readline";
+import pAll from "p-all";
+import { promiseRetry } from "@shared/utils/promiseRetry.util";
 import { ServerService } from "./server";
 import { defaultMalSynGenParams } from "./constants";
 
@@ -13,12 +14,17 @@ class ServerLabService extends ServerService {
   private apiAccessToken: string = "";
   private client: AutoDroidSdk;
 
+  private processorId: string = "";
+  private datasetId: string = "";
+
   constructor() {
     super();
 
     this.client = new AutoDroidSdk({
-      // baseUrl: "https://mdl.unihacker.club/graphql",
-      baseUrl: "http://localhost:3333/graphql",
+      baseUrl:
+        params.environment === "prod"
+          ? "https://mdl-api.unihacker.club/graphql"
+          : "http://localhost:3333/graphql",
       getAuthToken: async () => this.apiAccessToken,
     });
   }
@@ -45,12 +51,16 @@ class ServerLabService extends ServerService {
   }
 
   private async startSession() {
-    const session = await startAndGetSessionToken({
-      email: params.email,
-      password: params.password,
-      // firebaseWebApiKey: "AIzaSyBt-FkToQznrkXvSHYF2fM3G4XajCsgihs",
-      firebaseWebApiKey: "AIzaSyClFM2UQKY3fCPD6708oMQw3zjLtuB_17Y",
-    });
+    const session = await promiseRetry(() =>
+      startAndGetSessionToken({
+        email: params.email,
+        password: params.password,
+        firebaseWebApiKey:
+          params.environment === "prod"
+            ? "AIzaSyBt-FkToQznrkXvSHYF2fM3G4XajCsgihs"
+            : "AIzaSyClFM2UQKY3fCPD6708oMQw3zjLtuB_17Y",
+      }),
+    );
 
     if (!session) throw new Error("Failed to start session");
 
@@ -59,30 +69,38 @@ class ServerLabService extends ServerService {
 
   private async dispatchProcesses(quantity: number): Promise<void> {
     try {
-      const processor = await this.client.processor.getMany({});
+      /*
+      const processingIds = await pAll(
+        Array.from({ length: quantity }, () => async () => {
+          const processing = await promiseRetry(() =>
+            this.client.processing.requestDatasetProcessing({
+              data: {
+                dataset_id: this.datasetId,
+                processor_id: this.processorId,
+                parameters: defaultMalSynGenParams,
+              },
+            }),
+          );
 
-      const malSynGenProcessor = processor.edges.find(
-        edge => edge.node.name === "MalSynGen",
+          logger.info(`💥 Processing started: ${processing.id}`);
+
+          return processing.id;
+        }),
+        { concurrency: 1 },
       );
-      if (!malSynGenProcessor) throw new Error("MalSynGen processor not found");
-
-      const datasets = await this.client.dataset.getMany({});
-
-      const drebinDataset = datasets.edges.find(edge =>
-        edge.node.description?.includes("Drebin"),
-      );
-      if (!drebinDataset) throw new Error("Drebin dataset not found");
+      */
 
       const processingIds = await Promise.all(
         Array.from({ length: quantity }, async () => {
-          const processing =
-            await this.client.processing.requestDatasetProcessing({
+          const processing = await promiseRetry(() =>
+            this.client.processing.requestDatasetProcessing({
               data: {
-                dataset_id: drebinDataset.node.id,
-                processor_id: malSynGenProcessor.node.id,
+                dataset_id: this.datasetId,
+                processor_id: this.processorId,
                 parameters: defaultMalSynGenParams,
               },
-            });
+            }),
+          );
 
           logger.info(`💥 Processing started: ${processing.id}`);
 
@@ -94,15 +112,20 @@ class ServerLabService extends ServerService {
       logger.info(`🆗 Dispatched ${processingIds.length}`);
     } catch (error: any) {
       logger.error(`Error dispatching processes ${error.message}`);
+      logger.error(JSON.stringify(error.response, null, 2));
       throw new Error("Failed to dispatch processes");
     }
   }
 
   private async getNotFinishedProcesses() {
-    const processingResults = await Promise.all(
-      this.processingIds.map(processingId =>
-        this.client.processing.getOne({ processingId }),
-      ),
+    const processingResults = await pAll(
+      this.processingIds.map(processingId => async () => {
+        await sleep(500);
+        return promiseRetry(() =>
+          this.client.processing.getOne({ processingId }),
+        );
+      }),
+      { concurrency: 1 },
     );
 
     const runningProcesses = processingResults.filter(
@@ -113,10 +136,13 @@ class ServerLabService extends ServerService {
   }
 
   private async checkProcessesSuccess() {
-    const processingResults = await Promise.all(
-      this.processingIds.map(processingId =>
-        this.client.processing.getOne({ processingId }),
-      ),
+    const processingResults = await pAll(
+      this.processingIds.map(processingId => async () => {
+        await sleep(500);
+        return promiseRetry(() =>
+          this.client.processing.getOne({ processingId }),
+        );
+      }),
     );
 
     const failedProcesses = processingResults.filter(
@@ -133,15 +159,44 @@ class ServerLabService extends ServerService {
     logger.info("All processes completed successfully");
   }
 
-  public async run() {
+  public async initBackendConnection(): Promise<void> {
     await this.startSession();
+    await promiseRetry(() => this.client.dataset.getMany({}));
+
+    const processor = await promiseRetry(() =>
+      this.client.processor.getMany({}),
+    );
+
+    const malSynGenProcessor = processor.edges.find(
+      edge => edge.node.name === "MalSynGen",
+    );
+    if (!malSynGenProcessor) throw new Error("MalSynGen processor not found");
+
+    const datasets = await this.client.dataset.getMany({});
+
+    const drebinDataset = datasets.edges.find(edge =>
+      edge.node.description?.includes("Drebin"),
+    );
+    if (!drebinDataset) throw new Error("Drebin dataset not found");
+
+    this.datasetId = drebinDataset.node.id;
+    this.processorId = malSynGenProcessor.node.id;
+  }
+
+  public async run() {
+    await this.initBackendConnection();
+    await this.waitForWorkersCount();
+
+    await sleep(5000);
+
     await Array.from({ length: 3 }).reduce(
       async (previousPromise, _, index) => {
         await previousPromise;
 
         this.phase = index + 1;
 
-        await new Promise<void>(resolve => {
+        await sleep(5000);
+        /* await new Promise<void>(resolve => {
           const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
@@ -151,7 +206,7 @@ class ServerLabService extends ServerService {
             rl.close();
             resolve();
           });
-        });
+        }); */
 
         logger.info(`Starting phase ${this.phase}...`);
 
@@ -161,7 +216,9 @@ class ServerLabService extends ServerService {
           phase: this.phase,
           procedureId,
         });
-        await this.dispatchProcesses(this.phase);
+        await this.dispatchProcesses(this.phase * params.quantity);
+
+        await sleep(5000);
 
         await new Promise<void>(resolve => {
           const interval = setInterval(async () => {
@@ -182,6 +239,11 @@ class ServerLabService extends ServerService {
       },
       Promise.resolve(),
     );
+
+    logger.info("All phases completed...");
+    await this.stop();
+    this.closeServer();
+    process.exit(0);
   }
 }
 

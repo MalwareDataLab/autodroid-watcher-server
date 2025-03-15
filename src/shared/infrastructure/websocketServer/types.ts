@@ -1,5 +1,8 @@
 import { Server } from "socket.io";
-import { MetricsReport } from "@shared/types/metrics.type";
+import {
+  MetricsReport,
+  SystemInformationData,
+} from "@shared/types/metrics.type";
 
 export interface ServerToClientEvents {
   pong: () => void;
@@ -12,6 +15,7 @@ export interface ClientToServerEvents {
   ping: () => void;
 
   report: (data: MetricsReport) => void;
+  systemInformation: (data: SystemInformationData) => void;
 }
 
 export interface InterServerEvents {

@@ -14,7 +14,6 @@ interface StatisticsResult {
 
 class StatisticsGenerator {
   private numericalColumns = [
-    "TimeDifferenceSeconds",
     "ActiveProcessingCount",
     "Host_CPU",
     "Host_Memory_Total",
@@ -170,6 +169,7 @@ class StatisticsGenerator {
 
         if (values.length === 0) return;
 
+        /*
         const { cleaned, removed } = this.removeOutliers(values);
         outliers.push(
           ...removed.map(v => ({
@@ -179,8 +179,9 @@ class StatisticsGenerator {
             reason: v.reason,
           })),
         );
+        */
 
-        statistics[countNumber][column] = this.calculateStats(cleaned);
+        statistics[countNumber][column] = this.calculateStats(values);
       });
     });
 

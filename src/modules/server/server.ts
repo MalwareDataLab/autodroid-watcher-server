@@ -14,7 +14,7 @@ class ServerService extends ServerUtils {
     this.initialization = this.startServer();
   }
 
-  private getConnectedWorkersCount(): number {
+  public getConnectedWorkersCount(): number {
     return this.server.getIo().engine.clientsCount;
   }
 
@@ -53,6 +53,15 @@ class ServerService extends ServerUtils {
     await this.server.start(params.port);
 
     this.server.getIo().on("connection", socket => {
+      socket.on("systemInformation", async data => {
+        if (!data.procedureId) {
+          logger.error(`Received system information with missing procedureId`);
+          return;
+        }
+
+        await this.writeSystemInformation(data);
+      });
+
       socket.on("report", data => {
         if (
           !data.workerName ||

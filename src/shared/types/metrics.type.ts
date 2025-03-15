@@ -1,3 +1,5 @@
+import { getAllData } from "systeminformation";
+
 export type Metrics = {
   name: string;
   type: "host" | "container";
@@ -26,4 +28,8 @@ export type MetricsReport = {
 
   error: string | null;
   time: string;
+};
+
+export type SystemInformationData = Awaited<ReturnType<typeof getAllData>> & {
+  procedureId: string;
 };

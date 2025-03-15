@@ -75,7 +75,6 @@ async function generateLineChart({
             text: "Percentage (%)",
           },
           suggestedMin: 0,
-          suggestedMax: 100,
         },
       },
     },
