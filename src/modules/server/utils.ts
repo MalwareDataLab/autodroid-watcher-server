@@ -58,13 +58,16 @@ class ServerUtils {
   protected async writeSystemInformation(
     params: SystemInformationData,
   ): Promise<void> {
-    const { procedureId } = params;
+    const { procedureId, workerName } = params;
 
     const folderPath = await this.setupProcedureFolderAndGetFolder({
       procedureId,
     });
 
-    const logFilePath = path.join(folderPath, "systemInformation.json");
+    const logFilePath = path.join(
+      folderPath,
+      `${workerName}-systemInformation.json`,
+    );
 
     if (!fsSync.existsSync(logFilePath))
       fsAsync.writeFile(logFilePath, JSON.stringify(params, null, 2));

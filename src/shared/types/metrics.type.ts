@@ -31,5 +31,6 @@ export type MetricsReport = {
 };
 
 export type SystemInformationData = Awaited<ReturnType<typeof getAllData>> & {
+  workerName: string;
   procedureId: string;
 };

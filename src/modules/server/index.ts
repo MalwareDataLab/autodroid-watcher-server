@@ -90,6 +90,7 @@ class ServerLabService extends ServerService {
       );
       */
 
+      const now = Date.now();
       const processingIds = await Promise.all(
         Array.from({ length: quantity }, async () => {
           const processing = await promiseRetry(() =>
@@ -109,7 +110,9 @@ class ServerLabService extends ServerService {
       );
 
       this.processingIds = processingIds;
-      logger.info(`🆗 Dispatched ${processingIds.length}`);
+      logger.info(
+        `🆗 Dispatched ${processingIds.length} on ${Date.now() - now}ms`,
+      );
     } catch (error: any) {
       logger.error(`Error dispatching processes ${error.message}`);
       logger.error(JSON.stringify(error.response, null, 2));
