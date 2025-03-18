@@ -36,7 +36,6 @@ cd autodroid-watcher-server
 
 Este software foi desenvolvido para ser executado em um ambiente Linux.
 
-
 ### Pré-requisitos
 
 Para executar o projeto, você precisará ter o Node.js e o npm instalados em sua máquina. Você pode baixar o Node.js [aqui](https://nodejs.org/) ou através do comando abaixo:
@@ -77,8 +76,7 @@ Por padrão, o servidor escuta na porta HTTP 3000, você pode alterar este compo
 
 Siga as instruções para configurar o(s)  [cliente(s)](https://github.com/MalwareDataLab/) na máquina onde o [AutoDroid Worker](https://github.com/MalwareDataLab/autodroid-worker) está instalado.
 
-
-- [📱 Utilização](#usage)
+## 📱 Utilização <a name="usage"></a>
 
 Certifique-se de que o túnel HTTP esteja operacional e o(s) [cliente(s)](https://github.com/MalwareDataLab/autodroid-watcher-client) estejam configurados para enviar os dados para a URL que foi gerada ao executar o túnel.
 
