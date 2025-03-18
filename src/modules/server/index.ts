@@ -56,9 +56,10 @@ class ServerLabService extends ServerService {
         email: params.email,
         password: params.password,
         firebaseWebApiKey:
-          params.environment === "prod"
+          params["firebase-api-token"] ||
+          (params.environment === "prod"
             ? "AIzaSyBt-FkToQznrkXvSHYF2fM3G4XajCsgihs"
-            : "AIzaSyClFM2UQKY3fCPD6708oMQw3zjLtuB_17Y",
+            : "AIzaSyClFM2UQKY3fCPD6708oMQw3zjLtuB_17Y"),
       }),
     );
 
@@ -69,27 +70,6 @@ class ServerLabService extends ServerService {
 
   private async dispatchProcesses(quantity: number): Promise<void> {
     try {
-      /*
-      const processingIds = await pAll(
-        Array.from({ length: quantity }, () => async () => {
-          const processing = await promiseRetry(() =>
-            this.client.processing.requestDatasetProcessing({
-              data: {
-                dataset_id: this.datasetId,
-                processor_id: this.processorId,
-                parameters: defaultMalSynGenParams,
-              },
-            }),
-          );
-
-          logger.info(`💥 Processing started: ${processing.id}`);
-
-          return processing.id;
-        }),
-        { concurrency: 1 },
-      );
-      */
-
       const now = Date.now();
       const processingIds = await Promise.all(
         Array.from({ length: quantity }, async () => {
@@ -187,63 +167,62 @@ class ServerLabService extends ServerService {
   }
 
   public async run() {
-    await this.initBackendConnection();
-    await this.waitForWorkersCount();
+    await Array.from({ length: params.iterations }).reduce(
+      async (previousI, __, i) => {
+        await previousI;
 
-    await sleep(5000);
+        logger.info(`Starting iteration ${i + 1} of ${params.iterations}...`);
+        this.phase = 0;
 
-    await Array.from({ length: 3 }).reduce(
-      async (previousPromise, _, index) => {
-        await previousPromise;
+        await Array.from({ length: 3 }).reduce(
+          async (previousPromise, _, index) => {
+            await previousPromise;
 
-        this.phase = index + 1;
+            await this.initBackendConnection();
+            await this.waitForWorkersCount();
 
-        await sleep(5000);
-        /* await new Promise<void>(resolve => {
-          const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-          });
+            this.phase = index + 1;
 
-          rl.question(`Press ENTER to start phase ${this.phase}...`, () => {
-            rl.close();
-            resolve();
-          });
-        }); */
+            await sleep(5000);
 
-        logger.info(`Starting phase ${this.phase}...`);
+            logger.info(`Starting phase ${this.phase} of iteration ${i}...`);
 
-        const procedureId = this.generateProcedureId();
-        this.procedureIds.push(procedureId);
-        await this.start({
-          phase: this.phase,
-          procedureId,
-        });
-        await this.dispatchProcesses(this.phase * params.quantity);
+            const procedureId = this.generateProcedureId();
+            this.procedureIds.push(procedureId);
+            await this.start({
+              phase: this.phase,
+              procedureId,
+            });
+            await this.dispatchProcesses(this.phase * params.quantity);
 
-        await sleep(5000);
+            await sleep(5000);
 
-        await new Promise<void>(resolve => {
-          const interval = setInterval(async () => {
-            const notFinishedProcesses = await this.getNotFinishedProcesses();
-            if (notFinishedProcesses.length === 0) {
-              clearInterval(interval);
-              resolve();
-            }
-          }, 1000);
-        });
+            await new Promise<void>(resolve => {
+              const interval = setInterval(async () => {
+                const notFinishedProcesses =
+                  await this.getNotFinishedProcesses();
+                if (notFinishedProcesses.length === 0) {
+                  clearInterval(interval);
+                  resolve();
+                }
+              }, 1000);
+            });
 
-        logger.info("All processes finished");
-        await this.checkProcessesSuccess();
-        await this.stop();
+            logger.info("All processes finished");
+            await this.checkProcessesSuccess();
+            await this.stop();
 
-        logger.info(`Phase ${this.phase} completed...`);
-        await sleep(5000);
+            logger.info(`Phase ${this.phase} or iteration ${i} completed...`);
+            await sleep(5000);
+          },
+          Promise.resolve(),
+        );
+        logger.info(`All phases of iteration ${i} completed...`);
       },
       Promise.resolve(),
     );
 
-    logger.info("All phases completed...");
+    logger.info("All iterations completed...");
     await this.stop();
     this.closeServer();
     process.exit(0);

@@ -42,6 +42,7 @@ class ServerService extends ServerUtils {
             `Timeout waiting for workers. Available: ${this.getConnectedWorkersCount()}`,
           );
           reject(new Error("Timeout waiting for workers"));
+          process.exit(1);
         }, 60000);
       }),
     ]);
@@ -56,10 +57,9 @@ class ServerService extends ServerUtils {
       socket.on("systemInformation", async data => {
         if (!data.procedureId) {
           logger.error(`Received system information with missing procedureId`);
-          return;
+        } else {
+          // await this.writeSystemInformation(data);
         }
-
-        await this.writeSystemInformation(data);
       });
 
       socket.on("report", data => {

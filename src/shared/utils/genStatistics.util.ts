@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import path from "node:path";
@@ -74,6 +75,97 @@ class StatisticsGenerator {
     throw new Error("Invalid mode");
   }
 
+  public async combineExperimentMetrics(folder: string): Promise<void> {
+    const experimentDir = path.resolve(process.cwd(), "experiments", folder);
+    if (!fs.existsSync(experimentDir)) {
+      console.error("Experiment directory not found");
+      return;
+    }
+
+    if (!fs.existsSync(experimentDir))
+      throw new Error(`Step folder not found: ${experimentDir}`);
+
+    const files = await this.getInputFiles(experimentDir, "experiment");
+
+    if (!files.length) {
+      console.error(
+        `No CSV files found in the specified folder ${experimentDir}`,
+      );
+      return;
+    }
+    const allData: { headers: string[]; rows: string[][] }[] = [];
+
+    for (const file of files) {
+      const fileName = path.basename(file, ".csv");
+      const content = await fsAsync.readFile(file, "utf-8");
+      const rows = content.split("\n").filter(l => l.trim());
+
+      if (rows.length === 0) continue;
+
+      const headers = rows[0].split(",").map(h => `${fileName}_${h.trim()}`);
+      const dataRows = rows
+        .slice(1)
+        .map(row => row.split(",").map(cell => cell.trim()));
+
+      allData.push({ headers, rows: dataRows });
+    }
+
+    // Create combined headers and prepare row structure
+    const combinedHeaders = allData.flatMap(data => data.headers);
+    const maxRows = Math.max(...allData.map(data => data.rows.length));
+    const combinedRows: string[][] = Array(maxRows)
+      .fill(0)
+      .map(() => []);
+
+    // Populate combined rows
+    for (let rowIndex = 0; rowIndex < maxRows; rowIndex += 1) {
+      for (const data of allData) {
+        const rowData =
+          rowIndex < data.rows.length
+            ? data.rows[rowIndex]
+            : Array(data.headers.length).fill("");
+        combinedRows[rowIndex].push(...rowData);
+      }
+    }
+
+    const csvContent = [
+      combinedHeaders.join(","),
+      ...combinedRows.map(row => row.join(",")),
+    ].join("\n");
+
+    const outputPath = path.join(experimentDir, "combined_metrics.csv");
+    await fsAsync.writeFile(outputPath, csvContent);
+  }
+
+  private async generateMachineGroupStatistics(params: {
+    allFiles: string[];
+    outputFolder: string;
+    isGlobal: boolean;
+  }) {
+    const group1Files = ["rnp1", "rnp2", "rnp3", "rnp4"];
+    const group2Files = ["w1", "w2", "w3", "w4"];
+    const group3Files = ["w5"];
+    const group4Files = ["ms1"];
+
+    await Promise.all(
+      [group1Files, group2Files, group3Files, group4Files].map(
+        async (group, index) => {
+          const allGroupRows = await this.readAllCSVFiles(
+            params.allFiles.filter(file => group.some(g => file.includes(g))),
+          );
+          const groupedGroupData = this.groupByCount(allGroupRows);
+          const groupedStatistics = this.calculateStatistics(groupedGroupData);
+          await this.writeOutput(
+            groupedStatistics.statistics,
+            groupedStatistics.outliers,
+            path.resolve(process.cwd(), "experiments", params.outputFolder),
+            `${params.isGlobal ? "global." : ""}statistics-group${index + 1}.csv`,
+          );
+        },
+      ),
+    );
+  }
+
   public async generateStatistics(
     inputFolder: string,
     mode: "experiment" | "phase" = "experiment",
@@ -82,6 +174,8 @@ class StatisticsGenerator {
     const allRows = await this.readAllCSVFiles(files);
     const groupedData = this.groupByCount(allRows);
     const { statistics, outliers } = this.calculateStatistics(groupedData);
+    const date = new Date();
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}-${String(date.getHours()).padStart(2, "0")}-${String(date.getMinutes()).padStart(2, "0")}-${String(date.getSeconds()).padStart(2, "0")}`;
 
     if (mode === "experiment") {
       await this.writeOutput(
@@ -90,9 +184,13 @@ class StatisticsGenerator {
         path.resolve(process.cwd(), "experiments", inputFolder),
         `statistics.csv`,
       );
+
+      await this.generateMachineGroupStatistics({
+        allFiles: files,
+        outputFolder: inputFolder,
+        isGlobal: false,
+      });
     } else {
-      const date = new Date();
-      const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}-${String(date.getHours()).padStart(2, "0")}-${String(date.getMinutes()).padStart(2, "0")}-${String(date.getSeconds()).padStart(2, "0")}`;
       const folderPath = path.resolve(
         process.cwd(),
         "experiments",
@@ -101,12 +199,19 @@ class StatisticsGenerator {
       );
       if (!fs.existsSync(folderPath))
         await fsAsync.mkdir(folderPath, { recursive: true });
+
       await this.writeOutput(
         statistics,
         outliers,
         folderPath,
         `global.statistics.csv`,
       );
+
+      await this.generateMachineGroupStatistics({
+        allFiles: files,
+        outputFolder: folderPath,
+        isGlobal: true,
+      });
     }
   }
 
@@ -297,10 +402,22 @@ const generateAndSaveAllStatistics = async () => {
   }
 
   const folders = fs.readdirSync(experimentDir);
+
+  /* await Promise.all(
+    folders
+      .filter(folder => folder !== "globalStatistics")
+      .map(async folder => {
+        await new StatisticsGenerator().combineExperimentMetrics(folder);
+      }),
+  ); */
+
   const phaseFolders = folders.filter(folder => /^.*@\d+$/.test(folder));
 
   for (const phaseFolder of phaseFolders) {
-    new StatisticsGenerator().generateStatistics(phaseFolder, "experiment");
+    await new StatisticsGenerator().generateStatistics(
+      phaseFolder,
+      "experiment",
+    );
   }
 
   // Extract unique phase numbers

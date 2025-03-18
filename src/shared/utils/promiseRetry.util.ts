@@ -9,7 +9,7 @@ const promiseRetry = async <T>(
   fn: () => Promise<T>,
   params: IRetrySettings = {},
 ): Promise<T> => {
-  const { retries = 3, delay = 100 } = params;
+  const { retries = 10, delay = 500 } = params;
   try {
     return await fn();
   } catch (err) {

@@ -315,7 +315,7 @@ async function generateAndSaveStatisticsChart(params: {
   const csvPath = path.join(params.workingDir, params.csvFile);
   const outputDir = path.join(
     params.workingDir,
-    `${path.basename(params.workingDir)}-statistics-charts`,
+    `${path.basename(params.workingDir)}-${params.csvFile.replace(".csv", "")}-charts`,
   );
 
   if (!fs.existsSync(outputDir)) {

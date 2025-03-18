@@ -33,6 +33,22 @@ const argv = yargs(hideBin(process.argv))
     choices: ["dev", "prod"],
     description: "Environment of the server (dev, prod)",
   })
+  .option("iterations", {
+    type: "number",
+    alias: "i",
+    default: 1,
+    description: "Number of iterations to run",
+  })
+  .option("email", {
+    type: "string",
+    demandOption: true,
+    description: "Email for authentication",
+  })
+  .option("firebase-api-token", {
+    type: "string",
+    demandOption: false,
+    description: "Firebase API token for authentication",
+  })
   .help()
   .parseSync();
 
@@ -54,6 +70,8 @@ const paramsSchema = z.object({
   email: z.string().email(),
   password: z.string(),
   environment: z.enum(["dev", "prod"]),
+  iterations: z.number().default(1),
+  "firebase-api-token": z.string().optional(),
 });
 
 type Params = z.infer<typeof paramsSchema>;
@@ -65,14 +83,13 @@ const params = {
   email: argv.email as string,
   password: argv.password as string,
   environment: argv.environment as "dev" | "prod",
+  iterations: argv.iterations as number,
+  "firebase-api-token": argv["firebase-api-token"] as string | undefined,
 } as Params;
 
 (async () => {
-  const email = await askQuestion("Please enter your email: ");
   const password = await askQuestion("Please enter your password: ");
   rl.close();
-
-  params.email = email;
   params.password = password;
 
   const parsedConfig = paramsSchema.safeParse(params);
