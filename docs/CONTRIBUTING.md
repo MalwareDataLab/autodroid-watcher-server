@@ -4,7 +4,6 @@
 
 ## Geral
 
-- A [Estrutura do Código](./CODEBASE_STRUCTURE.md) contém informações detalhadas sobre como os vários arquivos deste projeto estão estruturados.
 - Por favor, certifique-se de que quaisquer alterações que você fizer estejam de acordo com as [Diretrizes de Código](./CODE_GUIDELINES.md) deste repositório.
 
 ## Começando a trabalhar
