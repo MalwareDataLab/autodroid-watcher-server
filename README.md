@@ -15,8 +15,7 @@ Este repositório contém o código-fonte do servidor do AutoDroid Watcher, um p
 
 Este servidor recebe a conexão de um ou mais [clientes](https://github.com/MalwareDataLab/autodroid-watcher-client) que devem ser instalados nas máquinas onde o [AutoDroid Worker](https://github.com/MalwareDataLab/autodroid-worker) está instalado. O cliente é responsável por coletar os dados de telemetria e enviá-los para o servidor, além de iniciar os experimentos e a coleta de dados.
 
-Os resultados dos experimentos são armazenados em arquivos CSV e gráficos, que podem ser utilizados para análise e visualização dos dados coletados, uma amostra de uma iteração completa está disponível na [pasta `examples`](
-  https://github.com/MalwareDataLab/autodroid-watcher-server/tree/main/docs/examples) deste repositório.
+Os resultados dos experimentos são armazenados em arquivos CSV e gráficos, que podem ser utilizados para análise e visualização dos dados coletados, uma amostra de uma iteração completa está disponível na [pasta `examples`](https://github.com/MalwareDataLab/autodroid-watcher-server/tree/main/docs/examples) deste repositório.
 
 ## 🏁 Primeiros Passos <a name = "getting_started"></a>
 
@@ -49,7 +48,6 @@ fnm install 22.14.0
 
 # Definir a versão do Node.js:
 fnm use 22.14.0
-
 ```
 
 Adicionalmente, instale os pacotes necessários para gerar os gráficos:
@@ -74,7 +72,7 @@ Por padrão, o servidor escuta na porta HTTP 3000, você pode alterar este compo
 
 ### Clientes
 
-Siga as instruções para configurar o(s)  [cliente(s)](https://github.com/MalwareDataLab/) na máquina onde o [AutoDroid Worker](https://github.com/MalwareDataLab/autodroid-worker) está instalado.
+Siga as instruções para configurar o(s) [cliente(s)](https://github.com/MalwareDataLab/autodroid-watcher-client) na máquina onde o [AutoDroid Worker](https://github.com/MalwareDataLab/autodroid-worker) está instalado.
 
 ## 📱 Utilização <a name="usage"></a>
 
@@ -102,8 +100,7 @@ Os parâmetros são:
 
 Os resultados são armazenados na pasta `experiments` e são organizados por data e hora. Cada iteração é armazenada em um arquivo separado.
 
-Os resultados dos experimentos são armazenados em arquivos CSV e gráficos, que podem ser utilizados para análise e visualização dos dados coletados, uma amostra de uma iteração completa está disponível na [pasta `examples`](
-  https://github.com/MalwareDataLab/autodroid-watcher-server/tree/main/docs/examples) deste repositório.
+Os resultados dos experimentos são armazenados em arquivos CSV e gráficos, que podem ser utilizados para análise e visualização dos dados coletados, uma amostra de uma iteração completa está disponível na [pasta `examples`](https://github.com/MalwareDataLab/autodroid-watcher-server/tree/main/docs/examples) deste repositório.
 
 ### Estatísticas
 
@@ -134,6 +131,11 @@ Os gráficos serão gerados nas pastas de cada experimento e na pasta `globalSta
 - [Chart.js](https://www.chartjs.org/) - Biblioteca de gráficos
 - [Socket.io](https://socket.io/) - Biblioteca para comunicação em tempo real
 - [simple-statistics](https://simplestatistics.org/) - Biblioteca de estatísticas
+- [Winston](https://github.com/winstonjs/winston) - Sistema de logging
+- [Sentry](https://sentry.io/) - Monitoramento de erros
+- [Zod](https://zod.dev/) - Validação de dados
+- [Dockerode](https://github.com/apocas/dockerode) - Cliente Docker
+- [SystemInformation](https://github.com/sebhildebrandt/systeminformation) - Coleta de informações do sistema
 
 ### Geral
 
@@ -148,3 +150,6 @@ Os gráficos serão gerados nas pastas de cada experimento e na pasta `globalSta
 - [Eslint](https://eslint.org/) - Framework de verificação de código
 - [Prettier](https://prettier.io/) - Formatador de código
 - [Semver](https://semver.org/) - Versionamento semântico
+- [Vitest](https://vitest.dev/) - Framework de testes
+- [tsup](https://github.com/egoist/tsup) - Bundler TypeScript
+- [tsx](https://github.com/egoist/tsx) - Executor TypeScript
