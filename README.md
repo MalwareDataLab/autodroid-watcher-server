@@ -78,7 +78,7 @@ docker run -d \
   -p 3000:3000 \
   -v $(pwd)/experiments:/app/experiments \
   malwaredatalab/autodroid-watcher-server:latest \
-  -t "secure_token" -q 10 -p 3000 -e prod --email john@doe -i 1
+  -t "secure_token" -q <<EXPECTED WORKERS>> -p 3000 -e prod --email <<EMAIL>> -i 1 -p <<PASSWORD>>
 ```
 
 Os parâmetros são os mesmos descritos na seção [Executando o Servidor](#executando-o-servidor), mas note que:

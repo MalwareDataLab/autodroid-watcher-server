@@ -44,6 +44,11 @@ const argv = yargs(hideBin(process.argv))
     demandOption: true,
     description: "Email for authentication",
   })
+  .option("password", {
+    type: "string",
+    demandOption: false,
+    description: "Password for authentication",
+  })
   .option("firebase-api-token", {
     type: "string",
     demandOption: false,
@@ -88,9 +93,11 @@ const params = {
 } as Params;
 
 (async () => {
-  const password = await askQuestion("Please enter your password: ");
-  rl.close();
-  params.password = password;
+  if (!params.password) {
+    const password = await askQuestion("Please enter your password: ");
+    rl.close();
+    params.password = password;
+  }
 
   const parsedConfig = paramsSchema.safeParse(params);
 
