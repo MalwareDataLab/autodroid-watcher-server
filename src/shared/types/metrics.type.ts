@@ -16,7 +16,7 @@ export type Metrics = {
 };
 
 export type MetricsReport = {
-  workerName: string;
+  watcherName: string;
   procedureId: string;
   count: number;
 
@@ -31,6 +31,6 @@ export type MetricsReport = {
 };
 
 export type SystemInformationData = Awaited<ReturnType<typeof getAllData>> & {
-  workerName: string;
+  watcherName: string;
   procedureId: string;
 };
