@@ -19,8 +19,7 @@ FROM node:22.14.0-alpine
 WORKDIR /app
 COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/package*.json ./
-
-RUN mkdir -p experiments
+COPY scripts/entrypoint.sh ./
 
 RUN apk add --no-cache \
     build-base \
@@ -30,8 +29,6 @@ RUN apk add --no-cache \
     giflib-dev \
     librsvg-dev
 
-RUN npm ci
+RUN chmod +x /app/entrypoint.sh && mkdir -p experiments && npm ci
 
-EXPOSE 3000
-ENV NODE_ENV=production
-CMD ["node", "dist/index.js"]
+ENTRYPOINT ["/app/entrypoint.sh"]
