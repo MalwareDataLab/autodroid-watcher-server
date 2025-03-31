@@ -78,7 +78,7 @@ docker run -it --rm \
   -p 3000:3000 \
   -v $(pwd)/experiments:/app/experiments \
   malwaredatalab/autodroid-watcher-server:latest \
-  -p 3000 -e prod -i 1 -q <<EXPECTED WORKERS>> -t "secure_token" --email <<EMAIL>> --password <<PASSWORD>>
+  -p 3000 -e prod -i 1 -q <<EXPECTED WORKERS>> -t "secure_token" --url <<URL>> --email <<EMAIL>> --password <<PASSWORD>>
 ```
 
 Os parâmetros são os mesmos descritos na seção [Executando o Servidor](#executando-o-servidor), mas note que:
@@ -127,7 +127,9 @@ Os parâmetros são:
 - `-e` ou `--env`: Ambiente do servidor, sendo `prod` ou `dev`. Caso esteja utilizando sua conta do [Malware DataLab](https://malwaredatalab.github.io/), utilize o ambiente `prod`. Caso contrário, utilize o ambiente `dev`.
 - `-i` ou `--iterations`: Número de iterações a serem realizadas. Uma iteração completa solicita 10, 20, 30 em sequência. O padrão é 1.
 - `--email`: Email da conta registrada no [Malware DataLab](https://malwaredatalab.github.io/) ou no projeto Firebase configurado na instância da [AutoDroid API](https://github.com/MalwareDataLab/autodroid-api).
+- `--url`: URL do servidor. Caso omitido o padrão para produção é `https://mdl-api.unihacker.club/graphql`.
 - `--firebase-api-token`: Token da API do Firebase caso tenha sido utilizado um projeto Firebase diferente do padrão. O padrão é o projeto do [Malware DataLab](https://malwaredatalab.github.io/).
+- `--dataset-name`: Nome do dataset a ser utilizado. O padrão é "Drebin".
 - `--help`: Exibe a ajuda do comando.
 
 ### Resultados

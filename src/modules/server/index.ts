@@ -24,7 +24,7 @@ class ServerLabService extends ServerService {
 
     this.client = new AutoDroidSdk({
       baseUrl:
-        params.environment === "prod"
+        params.url || params.environment === "prod"
           ? "https://mdl-api.unihacker.club/graphql"
           : "http://localhost:3333/graphql",
       getAuthToken: async () => this.apiAccessToken,
@@ -161,12 +161,13 @@ class ServerLabService extends ServerService {
 
     const datasets = await this.client.dataset.getMany({});
 
-    const drebinDataset = datasets.edges.find(edge =>
-      edge.node.description?.includes("Drebin"),
+    const selectedDataset = datasets.edges.find(edge =>
+      edge.node.description?.includes(params["dataset-name"]),
     );
-    if (!drebinDataset) throw new Error("Drebin dataset not found");
+    if (!selectedDataset)
+      throw new Error(`${params["dataset-name"]} dataset not found`);
 
-    this.datasetId = drebinDataset.node.id;
+    this.datasetId = selectedDataset.node.id;
     this.processorId = malSynGenProcessor.node.id;
   }
 
