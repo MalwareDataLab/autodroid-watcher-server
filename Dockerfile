@@ -29,6 +29,5 @@ RUN apk add --no-cache \
     giflib-dev \
     librsvg-dev
 
-RUN chmod +x /app/entrypoint.sh && mkdir -p experiments && npm ci
-
+RUN chmod +x /app/entrypoint.sh && mkdir -p experiments && chmod -R 777 experiments && npm ci
 ENTRYPOINT ["/app/entrypoint.sh"]
