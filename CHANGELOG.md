@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.3...v0.1.4) (2025-03-31)
+
+
+### Bug Fixes
+
+* graphql url ([8e05b4b](https://github.com/MalwareDataLab/autodroid-watcher-server/commit/8e05b4bf8ad6eebe5c24450469d575a518faa210))
+
 ## [0.1.3](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.2...v0.1.3) (2025-03-31)
 
 
