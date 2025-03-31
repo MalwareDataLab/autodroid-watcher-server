@@ -46,6 +46,7 @@ const argv = yargs(hideBin(process.argv))
   })
   .option("password", {
     type: "string",
+    alias: "p",
     demandOption: false,
     description: "Password for authentication",
   })

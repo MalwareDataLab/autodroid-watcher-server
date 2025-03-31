@@ -73,12 +73,12 @@ Você também pode executar o servidor usando Docker. A imagem oficial está dis
 Para executar o servidor usando Docker:
 
 ```bash
-docker run -d \
+docker run -it \
   --name autodroid-watcher-server \
   -p 3000:3000 \
   -v $(pwd)/experiments:/app/experiments \
   malwaredatalab/autodroid-watcher-server:latest \
-  -t "secure_token" -q <<EXPECTED WORKERS>> -p 3000 -e prod --email <<EMAIL>> -i 1 -p <<PASSWORD>>
+  -p 3000 -e prod -i 1 -q <<EXPECTED WORKERS>> -t "secure_token" --email <<EMAIL>> -p <<PASSWORD>>
 ```
 
 Os parâmetros são os mesmos descritos na seção [Executando o Servidor](#executando-o-servidor), mas note que:
