@@ -202,7 +202,9 @@ class ServerLabService extends ServerService {
               phase: this.phase,
               procedureId,
             });
-            await this.dispatchProcesses(this.phase * params.quantity);
+            await this.dispatchProcesses(
+              this.phase * params["processes-per-phase"],
+            );
 
             await sleep(5000);
 
