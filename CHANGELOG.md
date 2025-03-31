@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.2](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.0.1...v0.0.2) (2025-03-31)
+
+
+### Bug Fixes
+
+* add url and dataset name params ([0640c83](https://github.com/MalwareDataLab/autodroid-watcher-server/commit/0640c83a4c9748d52134d70713a46e23764025e7))
+
 ## 0.0.1 (2025-03-31)
 
 
