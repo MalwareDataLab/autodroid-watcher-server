@@ -37,6 +37,8 @@ Este software foi desenvolvido para ser executado em um ambiente Linux.
 
 ### Pré-requisitos
 
+Caso deseje utilizar o Docker, siga diretamente para a seção [Docker](#docker). Caso contrário, continue com as instruções abaixo.
+
 Para executar o projeto, você precisará ter o Node.js e o npm instalados em sua máquina. Você pode baixar o Node.js [aqui](https://nodejs.org/) ou através do comando abaixo:
 
 ```bash
@@ -64,7 +66,7 @@ Após clonar o repositório, entre no diretório do projeto e instale as depend�
 npm install
 ```
 
-### Docker
+### Docker <a name="docker"></a>
 
 Você também pode executar o servidor usando Docker. A imagem oficial está disponível em `malwaredatalab/autodroid-watcher-server:latest`.
 
