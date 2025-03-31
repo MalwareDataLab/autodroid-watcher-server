@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.4...v0.1.5) (2025-03-31)
+
+
+### Bug Fixes
+
+* group statistics by worker ([d0ccc5b](https://github.com/MalwareDataLab/autodroid-watcher-server/commit/d0ccc5bb8f41508dd5b7e0ff7e0e70634d586ff6))
+
 ## [0.1.4](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.3...v0.1.4) (2025-03-31)
 
 
