@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.1...v0.1.2) (2025-03-31)
+
+
+### Bug Fixes
+
+* change entrypoint to avoid data leak ([c355d06](https://github.com/MalwareDataLab/autodroid-watcher-server/commit/c355d06ee8d6713d5e534264ce49ae82a4467127))
+
 ## [0.1.1](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.0...v0.1.1) (2025-03-31)
 
 
