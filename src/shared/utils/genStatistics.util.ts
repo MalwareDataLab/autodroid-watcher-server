@@ -153,6 +153,7 @@ class StatisticsGenerator {
           const allGroupRows = await this.readAllCSVFiles(
             params.allFiles.filter(file => group.some(g => file.includes(g))),
           );
+          if (allGroupRows.length === 0) return;
           const groupedGroupData = this.groupByCount(allGroupRows);
           const groupedStatistics = this.calculateStatistics(groupedGroupData);
           await this.writeOutput(
