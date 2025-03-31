@@ -39,6 +39,11 @@ const argv = yargs(hideBin(process.argv))
     default: 1,
     description: "Number of iterations to run",
   })
+  .option("url", {
+    type: "string",
+    alias: "u",
+    description: "URL of the server",
+  })
   .option("email", {
     type: "string",
     demandOption: true,
@@ -53,6 +58,12 @@ const argv = yargs(hideBin(process.argv))
     type: "string",
     demandOption: false,
     description: "Firebase API token for authentication",
+  })
+  .option("dataset-name", {
+    type: "string",
+    demandOption: false,
+    default: "Drebin",
+    description: "Dataset name to use (default: Drebin)",
   })
   .help()
   .parseSync();
@@ -76,7 +87,9 @@ const paramsSchema = z.object({
   password: z.string(),
   environment: z.enum(["dev", "prod"]),
   iterations: z.number().default(1),
+  url: z.string().optional(),
   "firebase-api-token": z.string().optional(),
+  "dataset-name": z.string(),
 });
 
 type Params = z.infer<typeof paramsSchema>;
@@ -89,7 +102,9 @@ const params = {
   password: argv.password as string,
   environment: argv.environment as "dev" | "prod",
   iterations: argv.iterations as number,
+  url: argv.url,
   "firebase-api-token": argv["firebase-api-token"] as string | undefined,
+  "dataset-name": argv["dataset-name"] as string,
 } as Params;
 
 (async () => {
