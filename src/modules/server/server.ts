@@ -14,22 +14,23 @@ class ServerService extends ServerUtils {
     this.initialization = this.startServer();
   }
 
-  public getConnectedWorkersCount(): number {
+  public getConnectedWorkerWatchersCount(): number {
     return this.server.getIo().engine.clientsCount;
   }
 
-  public async waitForWorkersCount(): Promise<void> {
+  public async waitForWorkerWatchersCount(): Promise<void> {
     const { quantity } = params;
 
-    logger.info(`Waiting for ${quantity} workers to connect...`);
+    logger.info(`Waiting for ${quantity} worker watchers to connect...`);
 
     let timeoutId: NodeJS.Timeout;
 
     await Promise.race([
       new Promise(resolve => {
         const interval = setInterval(() => {
-          const connectedWorkers = this.getConnectedWorkersCount();
-          if (connectedWorkers >= quantity) {
+          const connectedWorkerWatchers =
+            this.getConnectedWorkerWatchersCount();
+          if (connectedWorkerWatchers >= quantity) {
             clearInterval(interval);
             clearTimeout(timeoutId);
             resolve(true);
@@ -39,15 +40,17 @@ class ServerService extends ServerUtils {
       new Promise((_, reject) => {
         timeoutId = setTimeout(() => {
           logger.error(
-            `Timeout waiting for workers. Available: ${this.getConnectedWorkersCount()}`,
+            `Timeout waiting for worker watchers. Available: ${this.getConnectedWorkerWatchersCount()}`,
           );
-          reject(new Error("Timeout waiting for workers"));
+          reject(new Error("Timeout waiting for worker watchers"));
           process.exit(1);
         }, 60000);
       }),
     ]);
 
-    logger.info(`🆗 Workers connected: ${this.getConnectedWorkersCount()}.`);
+    logger.info(
+      `🆗 Worker watchers connected: ${this.getConnectedWorkerWatchersCount()}.`,
+    );
   }
 
   private async startServer(): Promise<void> {
@@ -94,7 +97,7 @@ class ServerService extends ServerUtils {
       });
 
       socket.on("disconnect", () => {
-        logger.info(`Worker ${socket.id} disconnected`);
+        logger.info(`Worker watcher ${socket.id} disconnected`);
       });
     });
   }

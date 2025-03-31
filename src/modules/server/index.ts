@@ -25,9 +25,10 @@ class ServerLabService extends ServerService {
 
     this.client = new AutoDroidSdk({
       baseUrl:
-        params.url || params.environment === "prod"
+        params.url ||
+        (params.environment === "prod"
           ? "https://mdl-api.unihacker.club/graphql"
-          : "http://localhost:3333/graphql",
+          : "http://localhost:3333/graphql"),
       getAuthToken: async () => this.apiAccessToken,
     });
   }
@@ -41,7 +42,7 @@ class ServerLabService extends ServerService {
   }): Promise<void> {
     logger.info("✅ Starting server in lab mode...");
 
-    await this.waitForWorkersCount();
+    await this.waitForWorkerWatchersCount();
 
     this.procedureId = procedureId;
     this.phase = phase || 0;
@@ -185,7 +186,7 @@ class ServerLabService extends ServerService {
             await previousPromise;
 
             await this.initBackendConnection();
-            await this.waitForWorkersCount();
+            await this.waitForWorkerWatchersCount();
 
             this.phase = index + 1;
 

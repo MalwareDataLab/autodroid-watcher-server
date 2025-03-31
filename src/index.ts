@@ -12,13 +12,13 @@ const argv = yargs(hideBin(process.argv))
     type: "string",
     alias: "t",
     demandOption: true,
-    description: "Authentication token for worker",
+    description: "Authentication token for worker watcher",
   })
   .option("quantity", {
     type: "number",
     alias: "q",
     demandOption: true,
-    description: "Expected worker connections",
+    description: "Expected worker watcher connections",
   })
   .option("port", {
     type: "number",

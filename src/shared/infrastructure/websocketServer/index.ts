@@ -44,15 +44,15 @@ class WebsocketServer {
 
   private setupEventHandlers(): void {
     this.io.on("connection", socket => {
-      logger.info(`✅ Client connected: ${socket.id}`);
+      logger.info(`✅ Worker watcher connected: ${socket.id}`);
 
       socket.on("disconnect", () => {
-        logger.info(`⭕ Client disconnected: ${socket.id}`);
+        logger.info(`⭕ Worker watcher disconnected: ${socket.id}`);
       });
 
       socket.on("error", error => {
         logger.error(
-          `❌ Socket error for client ${socket.id}: ${error.message}`,
+          `❌ Socket error for worker watcher ${socket.id}: ${error.message}`,
         );
       });
 
