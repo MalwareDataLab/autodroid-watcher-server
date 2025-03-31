@@ -58,7 +58,7 @@ class ServerUtils {
   protected async writeSystemInformation(
     params: SystemInformationData,
   ): Promise<void> {
-    const { procedureId, workerName } = params;
+    const { procedureId, watcherName } = params;
 
     const folderPath = await this.setupProcedureFolderAndGetFolder({
       procedureId,
@@ -66,7 +66,7 @@ class ServerUtils {
 
     const logFilePath = path.join(
       folderPath,
-      `${workerName}-systemInformation.json`,
+      `${watcherName}-systemInformation.json`,
     );
 
     if (!fsSync.existsSync(logFilePath))
@@ -75,7 +75,7 @@ class ServerUtils {
 
   protected async write(params: MetricsReport): Promise<void> {
     const {
-      workerName,
+      watcherName,
       procedureId,
       count,
 
@@ -99,7 +99,10 @@ class ServerUtils {
       procedureId,
     });
 
-    const logFilePath = path.join(folderPath, `${params.workerName}.csv`);
+    const logFilePath = path.join(
+      folderPath,
+      `${params.watcherName}-${workerMetrics.name}.csv`,
+    );
 
     if (!fsSync.existsSync(logFilePath))
       fsAsync.writeFile(logFilePath, `${this.headers}\n`);
@@ -128,7 +131,7 @@ class ServerUtils {
     const row = [
       count,
       serverTimeString,
-      workerName,
+      watcherName,
       time,
       procedureId,
       processingKeys.length,

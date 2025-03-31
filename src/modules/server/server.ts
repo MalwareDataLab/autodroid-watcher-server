@@ -64,12 +64,12 @@ class ServerService extends ServerUtils {
 
       socket.on("report", data => {
         if (
-          !data.workerName ||
+          !data.watcherName ||
           !data.procedureId ||
           typeof data.count !== "number"
         ) {
           logger.error(
-            `Received report with missing data. workerName: ${data.workerName}, procedureId: ${data.procedureId}, count: ${data.count}`,
+            `Received report with missing data. watcherName: ${data.watcherName}, procedureId: ${data.procedureId}, count: ${data.count}`,
           );
           return;
         }
