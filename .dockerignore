@@ -1,12 +1,45 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Build output
+dist
+build
+
+# Version control
 .git
 .gitignore
-.vscode
-*.md
-*.log
 
-*Dockerfile*
-*docker-compose*
+# IDE
+.vscode
+.idea
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Test files
+coverage
+.nyc_output
+
+# Project specific
+experiments
+globalStatistics
+temp
+experiments_archive
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Docker
+Dockerfile
 .dockerignore
 
-node_modules
-dist
+# Misc
+.DS_Store
+*.log

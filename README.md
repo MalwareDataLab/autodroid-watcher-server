@@ -64,6 +64,39 @@ Após clonar o repositório, entre no diretório do projeto e instale as depend�
 npm install
 ```
 
+### Docker
+
+Você também pode executar o servidor usando Docker. A imagem oficial está disponível em `malwaredatalab/autodroid-watcher-server:latest`.
+
+Para executar o servidor usando Docker:
+
+```bash
+docker run -d \
+  --name autodroid-watcher-server \
+  -p 3000:3000 \
+  -v $(pwd)/experiments:/app/experiments \
+  -e NODE_ENV=prod \
+  malwaredatalab/autodroid-watcher-server:latest \
+  -t "secure_token" -q 10 -p 3000 -e prod --email john@doe -i 1
+```
+
+Os parâmetros são os mesmos descritos na seção [Executando o Servidor](#executando-o-servidor), mas note que:
+- A porta 3000 do container é mapeada para a porta 3000 do host
+- A pasta `experiments` é montada como um volume para persistir os dados
+- O ambiente é definido como `prod` através da variável de ambiente `NODE_ENV`
+
+Para parar o container:
+
+```bash
+docker stop autodroid-watcher-server
+```
+
+Para remover o container:
+
+```bash
+docker rm autodroid-watcher-server
+```
+
 ### Túneis HTTP
 
 Esta aplicação requer um túnel HTTP para receber os dados dos clientes. Você pode usar o [ngrok](https://ngrok.com/) ou o [cloudflared](https://developers.cloudflare.com/pages/how-to/preview-with-cloudflare-tunnel/).
@@ -110,7 +143,7 @@ Utilize o comando abaixo para gerar as estatísticas dos experimentos:
 npm run statistics
 ```
 
-Este comando irá gerar todas as estatísticas, por cada experimento (entre os nós do experimento) e globalmente caso mais de uma iteração tenha sido realizada, na pasta `globalStatistics`.
+Este comando irá gerar todas as estatísticas, por cada experimento (entre os nós do experimento) e globalmente caso mais de uma iteração tenha sido realizada, na pasta `experiments/globalStatistics`.
 
 ### Gráficos Preliminares
 
@@ -121,7 +154,7 @@ npm run chart:experiments
 npm run chart:statistics
 ```
 
-Os gráficos serão gerados nas pastas de cada experimento e na pasta `globalStatistics`, respectivamente.
+Os gráficos serão gerados nas pastas de cada experimento e na pasta `experiments/globalStatistics`, respectivamente.
 
 ## ⛏️ Tecnologias Utilizadas <a name = "built_using"></a>
 

@@ -5,6 +5,8 @@ import { params } from "@/src";
 import { sleep } from "@shared/utils/sleep.util";
 import pAll from "p-all";
 import { promiseRetry } from "@shared/utils/promiseRetry.util";
+import { generateAndSaveAllExperimentChart } from "@shared/utils/genExperimentChart.util";
+import { generateAndSaveAllStatisticsCharts } from "@shared/utils/genStatisticsChart.util";
 import { ServerService } from "./server";
 import { defaultMalSynGenParams } from "./constants";
 
@@ -224,6 +226,8 @@ class ServerLabService extends ServerService {
 
     logger.info("All iterations completed...");
     await this.stop();
+    await generateAndSaveAllStatisticsCharts();
+    await generateAndSaveAllExperimentChart();
     this.closeServer();
     process.exit(0);
   }
