@@ -1,2 +1,2 @@
 #!/bin/sh
-exec node dist/index.js "$@" 
+node dist/index.js $@

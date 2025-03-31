@@ -73,7 +73,7 @@ Você também pode executar o servidor usando Docker. A imagem oficial está dis
 Para executar o servidor usando Docker:
 
 ```bash
-docker run -it \
+docker run -it --rm \
   --name autodroid-watcher-server \
   -p 3000:3000 \
   -v $(pwd)/experiments:/app/experiments \
