@@ -236,7 +236,8 @@ class ServerLabService extends ServerService {
 const server = new ServerLabService();
 
 server.run().catch(err => {
-  logger.error("Failed to start server in lab mode", err);
+  logger.error(`Failed to run server. ${err}`);
+  process.exit(1);
 });
 
 export { server };

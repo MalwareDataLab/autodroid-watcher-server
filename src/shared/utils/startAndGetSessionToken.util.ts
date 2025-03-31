@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 export interface IFirebaseSessionDTO {
   idToken: string;
   localId: string;
@@ -46,7 +48,8 @@ export const startAndGetSessionToken = async ({
   const data = await res.json();
 
   if (!data.idToken) {
-    throw new Error(`Fail to start session. ${JSON.stringify(data, null, 2)}`);
+    logger.error(JSON.stringify(data, null, 2));
+    throw new Error(`Fail to start session. Your password might be incorrect.`);
   }
 
   const updatedTestVariables = {
