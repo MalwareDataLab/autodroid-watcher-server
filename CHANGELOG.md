@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.5...v0.1.6) (2025-03-31)
+
+
+### Bug Fixes
+
+* add processes per phase param ([d102dd3](https://github.com/MalwareDataLab/autodroid-watcher-server/commit/d102dd3dce9fc0d3c5671e313e742c40a2d14242))
+
 ## [0.1.5](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.4...v0.1.5) (2025-03-31)
 
 
