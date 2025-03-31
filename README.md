@@ -117,7 +117,7 @@ Certifique-se de que o túnel HTTP esteja operacional e o(s) [cliente(s)](https:
 Para executar o servidor, utilize o comando abaixo:
 
 ```bash
-npm run dev -t "secure_token" -q 10 -p 3000 -e prod --email john@doe -i 1
+npm run dev -q 10 -p 3000 -e prod -i 1 -t "secure_token" --email john@doe.com --password "123456"
 ```
 
 Os parâmetros são:

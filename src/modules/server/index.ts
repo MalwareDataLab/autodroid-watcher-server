@@ -53,16 +53,18 @@ class ServerLabService extends ServerService {
   }
 
   private async startSession() {
-    const session = await promiseRetry(() =>
-      startAndGetSessionToken({
-        email: params.email,
-        password: params.password,
-        firebaseWebApiKey:
-          params["firebase-api-token"] ||
-          (params.environment === "prod"
-            ? "AIzaSyBt-FkToQznrkXvSHYF2fM3G4XajCsgihs"
-            : "AIzaSyClFM2UQKY3fCPD6708oMQw3zjLtuB_17Y"),
-      }),
+    const session = await promiseRetry(
+      () =>
+        startAndGetSessionToken({
+          email: params.email,
+          password: params.password,
+          firebaseWebApiKey:
+            params["firebase-api-token"] ||
+            (params.environment === "prod"
+              ? "AIzaSyBt-FkToQznrkXvSHYF2fM3G4XajCsgihs"
+              : "AIzaSyClFM2UQKY3fCPD6708oMQw3zjLtuB_17Y"),
+        }),
+      { retries: 3, delay: 1000 },
     );
 
     if (!session) throw new Error("Failed to start session");
