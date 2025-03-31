@@ -6,6 +6,5 @@ ensure_public_permissions() {
 trap 'ensure_public_permissions; exit' EXIT INT TERM HUP QUIT ABRT ALRM SEGV PIPE USR1 USR2
 
 ensure_public_permissions
-echo "Received parameters: $@"
 node dist/index.js "$@" || true
 ensure_public_permissions
