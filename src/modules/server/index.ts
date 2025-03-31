@@ -24,11 +24,13 @@ class ServerLabService extends ServerService {
     super();
 
     this.client = new AutoDroidSdk({
-      baseUrl:
-        params.url ||
-        (params.environment === "prod"
+      baseUrl: params.url
+        ? params.url.endsWith("/graphql")
+          ? params.url
+          : `${params.url}/graphql`
+        : params.environment === "prod"
           ? "https://mdl-api.unihacker.club/graphql"
-          : "http://localhost:3333/graphql"),
+          : "http://localhost:3333/graphql",
       getAuthToken: async () => this.apiAccessToken,
     });
   }
