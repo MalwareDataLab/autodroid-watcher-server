@@ -20,6 +20,12 @@ const argv = yargs(hideBin(process.argv))
     demandOption: true,
     description: "Expected worker watcher connections",
   })
+  .option("processes-per-phase", {
+    type: "number",
+    alias: "pp",
+    default: 1,
+    description: "Number of processes to request per phase",
+  })
   .option("port", {
     type: "number",
     alias: "p",
@@ -82,6 +88,7 @@ const askQuestion = (query: string): Promise<string> => {
 const paramsSchema = z.object({
   token: z.string(),
   quantity: z.number().min(1),
+  "processes-per-phase": z.number().min(1),
   port: z.number().default(3000),
   email: z.string().email(),
   password: z.string(),
@@ -97,6 +104,7 @@ type Params = z.infer<typeof paramsSchema>;
 const params = {
   token: argv.token as string,
   quantity: argv.quantity as number,
+  "processes-per-phase": argv["processes-per-phase"] as number,
   port: argv.port as number,
   email: argv.email as string,
   password: argv.password as string,

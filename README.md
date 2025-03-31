@@ -123,12 +123,13 @@ npm run dev -q 10 -p 3000 -e prod -i 1 -t "secure_token" --email john@doe.com --
 Os parâmetros são:
 - `-t` ou `--token`: Token de autenticação do cliente. Este token deve ser o mesmo que foi configurado nos clientes. É um mecanismo de segurança para garantir que apenas clientes autorizados possam se conectar ao servidor. O valor é definido pelo utilizador.
 - `-q` ou `--quantity`: Número de clientes conectados a esperar antes de iniciar uma iteração.
+- `-pp` ou `--processes-per-phase`: Número de processos a serem solicitados por fase. O padrão é 1. Em cada fase, o número de processos será multiplicado pelo número da fase (ex: fase 1 = 1 processo, fase 2 = 2 processos, fase 3 = 3 processos).
 - `-p` ou `--port`: Porta do servidor. O padrão é 3000.
-- `-e` ou `--env`: Ambiente do servidor, sendo `prod` ou `dev`. Caso esteja utilizando sua conta do [Malware DataLab](https://malwaredatalab.github.io/), utilize o ambiente `prod`. Caso contrário, utilize o ambiente `dev`.
+- `-e` ou `--environment`: Ambiente do servidor, sendo `prod` ou `dev`. Caso esteja utilizando sua conta do [Malware DataLab](https://malwaredatalab.github.io/), utilize o ambiente `prod`. Caso contrário, utilize o ambiente `dev`.
 - `-i` ou `--iterations`: Número de iterações a serem realizadas. Uma iteração completa solicita 10, 20, 30 em sequência. O padrão é 1.
 - `--email`: Email da conta registrada no [Malware DataLab](https://malwaredatalab.github.io/) ou no projeto Firebase configurado na instância da [AutoDroid API](https://github.com/MalwareDataLab/autodroid-api).
-- `--password`: Senha da conta referente ao email fornecido.
-- `--url`: URL do servidor. Caso omitido o padrão para produção é `https://mdl-api.unihacker.club/graphql`.
+- `--password`: Senha da conta referente ao email fornecido. Se não fornecida, será solicitada interativamente.
+- `--url`: URL do servidor. Caso omitido o padrão para produção é `https://mdl-api.unihacker.club/graphql` e para desenvolvimento é `http://localhost:3333/graphql`.
 - `--firebase-api-token`: Token da API do Firebase caso tenha sido utilizado um projeto Firebase diferente do padrão. O padrão é o projeto do [Malware DataLab](https://malwaredatalab.github.io/).
 - `--dataset-name`: Nome do dataset a ser utilizado. O padrão é "Drebin".
 - `--help`: Exibe a ajuda do comando.
