@@ -23,7 +23,7 @@ export type MetricsReport = {
   hostMetrics: Metrics | null;
   workerMetrics: Metrics | null;
   processingMetrics: {
-    [key: string]: { processingId: string } & Metrics;
+    [key: string]: { processingId: string; workerName: string } & Metrics;
   };
 
   error: string | null;

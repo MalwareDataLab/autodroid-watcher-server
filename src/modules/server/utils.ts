@@ -78,11 +78,9 @@ class ServerUtils {
       watcherName,
       procedureId,
       count,
-
       hostMetrics,
       workerMetrics,
       processingMetrics,
-
       error,
       time,
     } = params;
@@ -99,54 +97,73 @@ class ServerUtils {
       procedureId,
     });
 
-    const logFilePath = path.join(
-      folderPath,
-      `${params.watcherName}-${workerMetrics.name}.csv`,
+    // Group processes by workerName
+    const processesByWorker = Object.entries(processingMetrics).reduce(
+      (acc, [key, process]) => {
+        const { workerName } = process;
+        if (!acc[workerName]) {
+          acc[workerName] = [];
+        }
+        acc[workerName].push({ key, process });
+        return acc;
+      },
+      {} as Record<string, Array<{ key: string; process: any }>>,
     );
 
-    if (!fsSync.existsSync(logFilePath))
-      fsAsync.writeFile(logFilePath, `${this.headers}\n`);
+    // Write a CSV file for each worker group
+    await Promise.all(
+      Object.entries(processesByWorker).map(
+        async ([groupWorkerName, processes]) => {
+          const logFilePath = path.join(
+            folderPath,
+            `${watcherName}-${groupWorkerName}.csv`,
+          );
 
-    const serverTime = new Date();
-    const serverTimeString = serverTime.toISOString();
+          if (!fsSync.existsSync(logFilePath)) {
+            await fsAsync.writeFile(logFilePath, `${this.headers}\n`);
+          }
 
-    // Flatten processingMetrics
-    const processingKeys = Object.keys(processingMetrics);
-    const processingData = Array(3)
-      .fill(null)
-      .map((_, i) => {
-        const key = processingKeys[i];
-        return key
-          ? [
-              processingMetrics[key].processingId,
-              processingMetrics[key].cpu.usedPercentage ?? "",
-              processingMetrics[key].memory.total ?? "",
-              processingMetrics[key].memory.used ?? "",
-              processingMetrics[key].memory.usedPercentage ?? "",
-            ]
-          : // WARNING: Should match quantity of processingData
-            ["", "", "", "", ""];
-      });
+          const serverTime = new Date();
+          const serverTimeString = serverTime.toISOString();
 
-    const row = [
-      count,
-      serverTimeString,
-      watcherName,
-      time,
-      procedureId,
-      processingKeys.length,
-      hostMetrics.cpu.usedPercentage ?? "",
-      hostMetrics.memory.total ?? "",
-      hostMetrics.memory.used ?? "",
-      hostMetrics.memory.usedPercentage ?? "",
-      workerMetrics.cpu.usedPercentage ?? "",
-      workerMetrics.memory.total ?? "",
-      workerMetrics.memory.used ?? "",
-      workerMetrics.memory.usedPercentage ?? "",
-      ...processingData.flat(),
-    ].join(",");
+          // Flatten processingMetrics for this group
+          const processingData = Array(3)
+            .fill(null)
+            .map((_, i) => {
+              const process = processes[i];
+              return process
+                ? [
+                    process.process.processingId,
+                    process.process.cpu.usedPercentage ?? "",
+                    process.process.memory.total ?? "",
+                    process.process.memory.used ?? "",
+                    process.process.memory.usedPercentage ?? "",
+                  ]
+                : ["", "", "", "", ""];
+            });
 
-    await fsAsync.appendFile(logFilePath, `${row}\n`);
+          const row = [
+            count,
+            serverTimeString,
+            groupWorkerName,
+            time,
+            procedureId,
+            processes.length,
+            hostMetrics.cpu.usedPercentage ?? "",
+            hostMetrics.memory.total ?? "",
+            hostMetrics.memory.used ?? "",
+            hostMetrics.memory.usedPercentage ?? "",
+            workerMetrics.cpu.usedPercentage ?? "",
+            workerMetrics.memory.total ?? "",
+            workerMetrics.memory.used ?? "",
+            workerMetrics.memory.usedPercentage ?? "",
+            ...processingData.flat(),
+          ].join(",");
+
+          await fsAsync.appendFile(logFilePath, `${row}\n`);
+        },
+      ),
+    );
   }
 
   protected generateProcedureId(): string {
