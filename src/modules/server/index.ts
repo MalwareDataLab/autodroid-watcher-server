@@ -194,7 +194,9 @@ class ServerLabService extends ServerService {
 
             await sleep(5000);
 
-            logger.info(`Starting phase ${this.phase} of iteration ${i}...`);
+            logger.info(
+              `Starting phase ${this.phase} of iteration ${i + 1}...`,
+            );
 
             const procedureId = this.generateProcedureId();
             this.procedureIds.push(procedureId);
@@ -223,12 +225,14 @@ class ServerLabService extends ServerService {
             await this.checkProcessesSuccess();
             await this.stop();
 
-            logger.info(`Phase ${this.phase} or iteration ${i} completed...`);
+            logger.info(
+              `Phase ${this.phase} of iteration ${i + 1} completed...`,
+            );
             await sleep(5000);
           },
           Promise.resolve(),
         );
-        logger.info(`All phases of iteration ${i} completed...`);
+        logger.info(`All phases of iteration ${i + 1} completed...`);
       },
       Promise.resolve(),
     );
