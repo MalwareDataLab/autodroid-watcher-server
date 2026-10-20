@@ -129,7 +129,7 @@ Os parâmetros são:
 - `-i` ou `--iterations`: Número de iterações a serem realizadas. Uma iteração completa solicita 10, 20, 30 em sequência. O padrão é 1.
 - `--email`: Email da conta registrada no [Malware DataLab](https://malwaredatalab.github.io/) ou no projeto Firebase configurado na instância da [AutoDroid API](https://github.com/MalwareDataLab/autodroid-api).
 - `--password`: Senha da conta referente ao email fornecido. Se não fornecida, será solicitada interativamente.
-- `--url`: URL do servidor. Caso omitido o padrão para produção é `https://mdl-api.unihacker.club/graphql` e para desenvolvimento é `http://localhost:3333/graphql`.
+- `--url`: URL do servidor. Caso omitido o padrão para produção é `https://api-autodroid.laviola.dev/graphql` e para desenvolvimento é `http://localhost:3333/graphql`.
 - `--firebase-api-token`: Token da API do Firebase caso tenha sido utilizado um projeto Firebase diferente do padrão. O padrão é o projeto do [Malware DataLab](https://malwaredatalab.github.io/).
 - `--dataset-name`: Nome do dataset a ser utilizado. O padrão é "Drebin".
 - `--help`: Exibe a ajuda do comando.
