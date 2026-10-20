@@ -29,7 +29,7 @@ class ServerLabService extends ServerService {
           ? params.url
           : `${params.url}/graphql`
         : params.environment === "prod"
-          ? "https://mdl-api.unihacker.club/graphql"
+          ? "https://api-autodroid.laviola.dev/graphql"
           : "http://localhost:3333/graphql",
       getAuthToken: async () => this.apiAccessToken,
     });
