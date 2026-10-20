@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.7...v0.1.8) (2026-10-20)
+
+
+### Bug Fixes
+
+* server url ([4b53e5d](https://github.com/MalwareDataLab/autodroid-watcher-server/commit/4b53e5d794b3a6ecfdf86bc16f378ea708e74590))
+
 ## [0.1.7](https://github.com/MalwareDataLab/autodroid-watcher-server/compare/v0.1.6...v0.1.7) (2025-04-05)
 
 
